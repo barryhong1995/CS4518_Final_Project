@@ -48,7 +48,8 @@ public class TakeImageFragment extends Fragment {
     private View.OnClickListener addListener = new View.OnClickListener(){
         public void onClick(View view){
             //TODO: function to add to DB
-            ((MainActivity)getActivity()).onClickAdd(imageURI);
+            ((MainActivity)getActivity()).setUri(imageURI);
+            ((MainActivity)getActivity()).onClickAdd(view);
         }
     };
 
@@ -100,6 +101,9 @@ public class TakeImageFragment extends Fragment {
 
         Button analyzeButton = (Button) getActivity().findViewById(R.id.analyzeButton);
         analyzeButton.setOnClickListener(inferenceListener);
+
+        Button addButton = (Button) getActivity().findViewById(R.id.dbButton);
+        addButton.setOnClickListener(addListener);
 
         if(image != null){
             ImageView mCameraDisplayView = (ImageView) getActivity().findViewById(R.id.imageView);

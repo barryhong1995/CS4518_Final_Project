@@ -65,7 +65,7 @@ public class ViewImageFragment extends Fragment {
         dbImagesButton.setOnClickListener(dbImageListener);
 
         Button addButton = (Button) getActivity().findViewById(R.id.dbButton);
-        addButton.setOnClickListener(addListener);
+ //TODO:       addButton.setOnClickListener(addListener);
 
         if(image != null){
             Bitmap displayImage = Bitmap.createScaledBitmap(image, 500, 500, true);

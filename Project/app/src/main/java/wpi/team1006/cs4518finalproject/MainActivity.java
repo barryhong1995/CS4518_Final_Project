@@ -148,18 +148,22 @@ public class MainActivity extends AppCompatActivity {
         storageReference = storage.getReference();
     }
 
+    public void setUri(Uri newUri){
+        photoURI = newUri;
+    }
+
     // Button to add new image information to database and image to storage
     public void onClickAdd(View v) {
         // Add image information to database
         DataImage imgData = new DataImage();
-        imgData.setImage();
-        imgData.setTags();
+        imgData.setImage(getFileName(photoURI));
+      //  imgData.setTags();
         collectionRef.add(imgData);
 
         // Add image  data to storage
         if(photoURI != null)
         {
-            StorageReference ref = storageReference.child("images/"+ mCurrentPhotoName);
+            StorageReference ref = storageReference.child("images/"+ getFileName(photoURI));
             ref.putFile(photoURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
