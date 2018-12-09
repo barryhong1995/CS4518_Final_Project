@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -30,8 +31,8 @@ public class TakeImageFragment extends Fragment {
     public int REQUEST_IMAGE_CAPTURE = 1;
     private File directory;
     private String mCurrentPhotoPath;
+    private Uri imageURI;
     private Bitmap image;
-
 
 
     private View.OnClickListener viewImageListener = new View.OnClickListener(){
@@ -47,6 +48,7 @@ public class TakeImageFragment extends Fragment {
     private View.OnClickListener addListener = new View.OnClickListener(){
         public void onClick(View view){
             //TODO: function to add to DB
+            ((MainActivity)getActivity()).onClickAdd(imageURI);
         }
     };
 
@@ -55,11 +57,13 @@ public class TakeImageFragment extends Fragment {
             ToggleButton onDevice = getActivity().findViewById(R.id.toggleButton);
             if(onDevice.isChecked()){
                 //on-device inference function call
-                Log.d("GPROJ", "on device");
+                String result = ((MainActivity)getActivity()).onDeviceProcessing(image);
+                Log.d("GPROJ", "on device: " + result);
             }
             else {
                 //off device inference call
-                Log.d("GPROJ", "off device");
+                String result = ((MainActivity)getActivity()).offDeviceProcessing(image);
+                Log.d("GPROJ", "off device: " + result);
             }
         }
     };
@@ -76,7 +80,6 @@ public class TakeImageFragment extends Fragment {
         directory = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);//directory to store temp images
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -92,14 +95,16 @@ public class TakeImageFragment extends Fragment {
         Button viewButton = (Button) getActivity().findViewById(R.id.viewImageButton);
         viewButton.setOnClickListener(viewImageListener);
 
-        Button addButton = (Button) getActivity().findViewById(R.id.dbButton);
-        addButton.setOnClickListener(addListener);
-
         Button imageButton = (Button) getActivity().findViewById(R.id.takePicButton);
         imageButton.setOnClickListener(imageListener);
 
         Button analyzeButton = (Button) getActivity().findViewById(R.id.analyzeButton);
         analyzeButton.setOnClickListener(inferenceListener);
+
+        if(image != null){
+            ImageView mCameraDisplayView = (ImageView) getActivity().findViewById(R.id.imageView);
+            mCameraDisplayView.setImageBitmap(image);
+        }
 
     }
 
@@ -110,7 +115,8 @@ public class TakeImageFragment extends Fragment {
         try {
             File tempFile = File.createTempFile("JPG_", ".jpg", directory);
             mCurrentPhotoPath = tempFile.getAbsolutePath();
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getContext(), "wpi.team1006.cs4518finalproject", tempFile));
+            imageURI = FileProvider.getUriForFile(getContext(), "wpi.team1006.cs4518finalproject", tempFile);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageURI);
         }
         catch(Exception e){
             Log.d("GPROJ", "TempFile failed to be added to extra!");

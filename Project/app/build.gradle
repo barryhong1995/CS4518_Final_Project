@@ -16,6 +16,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    aaptOptions{
+        noCompress "tflite"
+        noCompress "lite"
+    }
 }
 
 dependencies {
@@ -33,6 +37,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:16.0.5'
     implementation 'com.google.firebase:firebase-core:16.0.5'
     implementation 'com.google.firebase:firebase-auth:16.0.5'
+    //Tensorflow
+    implementation 'com.squareup.okhttp:okhttp:2.5.0'
+    implementation 'org.tensorflow:tensorflow-lite:+'
 }
 
 apply plugin: 'com.google.gms.google-services'

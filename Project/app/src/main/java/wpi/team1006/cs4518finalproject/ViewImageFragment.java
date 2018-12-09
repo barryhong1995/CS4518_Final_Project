@@ -33,6 +33,14 @@ public class ViewImageFragment extends Fragment {
         }
     };
 
+    /*private View.OnClickListener addListener = new View.OnClickListener(){
+        public void onClick(View view){
+            //TODO: function to add to DB
+            ((MainActivity)getActivity()).onClickAdd(imageURI);
+        }
+    };*/
+
+
     public ViewImageFragment() {
         // Required empty public constructor
     }
@@ -55,6 +63,9 @@ public class ViewImageFragment extends Fragment {
 
         Button dbImagesButton = (Button) getActivity().findViewById(R.id.dbImagesButton);
         dbImagesButton.setOnClickListener(dbImageListener);
+
+        Button addButton = (Button) getActivity().findViewById(R.id.dbButton);
+        addButton.setOnClickListener(addListener);
 
         if(image != null){
             Bitmap displayImage = Bitmap.createScaledBitmap(image, 500, 500, true);
