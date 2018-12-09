@@ -1,5 +1,6 @@
 package wpi.team1006.cs4518finalproject;
 
+import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -19,11 +20,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
 
         viewImageFragment = new ViewImageFragment();
         takeImageFragment = new TakeImageFragment();
@@ -36,12 +32,17 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentTransaction.add(R.id.mainContainer, currentFragment);
         fragmentTransaction.commit();
-
     }
 
+
     //change to the view image fragment
-    public void viewImage(){
+    public void viewImage(Bitmap image){
+        viewImageFragment.setDisplayImage(image);
+
         changeFragment(viewImageFragment);
+
+
+
     }
 
     public void viewDBImages(){
