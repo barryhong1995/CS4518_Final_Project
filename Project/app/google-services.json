@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "207593231106",
+    "firebase_url": "https://cs4518-final-bb071.firebaseio.com",
+    "project_id": "cs4518-final-bb071",
+    "storage_bucket": "cs4518-final-bb071.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207593231106:android:32ad6706c91e6b2d",
+        "android_client_info": {
+          "package_name": "wpi.team1006.cs4518finalproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "207593231106-70p8di8ieus4onu51ce2nnrsd0e14iuo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwl2sqFycK5os-1b3BZ_E5XSg_vHNFMS0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,8 @@
 package wpi.team1006.cs4518finalproject;
 
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -7,8 +10,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 public class MainActivity extends AppCompatActivity {
 
+    // Initialize variables
+    private FirebaseFirestore mFirestore;
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
+    private CollectionReference collectionRef;
     ViewImageFragment viewImageFragment;
     TakeImageFragment takeImageFragment;
     ViewDBImagesFragment viewDBImagesFragment;
@@ -19,6 +34,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize Firestore and Storage
+        initFirestore();
+        initStorage();
+
+        // Get a reference to the pet collection
+        collectionRef = mFirestore.collection("mass-data");
+    }
+
+    // Initialize Firestore
+    private void initFirestore() {
+        mFirestore = FirebaseFirestore.getInstance();
+    }
+
+    // Initialize Storage
+    private void initStorage() {
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
     }
 
     @Override
@@ -68,5 +101,27 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+    // Helper function to get file name from URI
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
 }
 
