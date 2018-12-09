@@ -1,19 +1,22 @@
 package wpi.team1006.cs4518finalproject;
 
-<<<<<<< HEAD
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-=======
 import android.graphics.Bitmap;
->>>>>>> 318811b019d644307fa09bf940a782c282ad6a32
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private CollectionReference collectionRef;
+    private Uri photoURI;
     ViewImageFragment viewImageFragment;
     TakeImageFragment takeImageFragment;
     ViewDBImagesFragment viewDBImagesFragment;
@@ -70,14 +74,43 @@ public class MainActivity extends AppCompatActivity {
         storageReference = storage.getReference();
     }
 
+    // Button to add new image information to database and image to storage
+    public void onClickAdd(View v) {
+        // Add image information to database
+        DataImage imgData = new DataImage();
+        imgData.setImage();
+        imgData.setTags();
+        collectionRef.add(imgData);
+
+        // Add image  data to storage
+        if(photoURI != null)
+        {
+            StorageReference ref = storageReference.child("images/"+ mCurrentPhotoName);
+            ref.putFile(photoURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(MainActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MainActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+                    // To be used if needed to check progress
+                }
+            });
+        }
+    }
+
     //change to the view image fragment
     public void viewImage(Bitmap image){
         viewImageFragment.setDisplayImage(image);
 
         changeFragment(viewImageFragment);
-
-
-
     }
 
     public void viewDBImages(){
