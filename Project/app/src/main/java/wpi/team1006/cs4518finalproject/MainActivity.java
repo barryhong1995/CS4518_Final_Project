@@ -1,8 +1,12 @@
 package wpi.team1006.cs4518finalproject;
 
+<<<<<<< HEAD
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+=======
+import android.graphics.Bitmap;
+>>>>>>> 318811b019d644307fa09bf940a782c282ad6a32
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -41,6 +45,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Get a reference to the pet collection
         collectionRef = mFirestore.collection("mass-data");
+
+        viewImageFragment = new ViewImageFragment();
+        takeImageFragment = new TakeImageFragment();
+        viewDBImagesFragment = new ViewDBImagesFragment();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        currentFragment = takeImageFragment;
+
+        fragmentTransaction.add(R.id.mainContainer, currentFragment);
+        fragmentTransaction.commit();
     }
 
     // Initialize Firestore
@@ -54,27 +70,14 @@ public class MainActivity extends AppCompatActivity {
         storageReference = storage.getReference();
     }
 
-    @Override
-    protected void onResume(){
-        super.onResume();
-
-        viewImageFragment = new ViewImageFragment();
-        takeImageFragment = new TakeImageFragment();
-        viewDBImagesFragment = new ViewDBImagesFragment();
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        currentFragment = takeImageFragment;
-
-        fragmentTransaction.add(R.id.mainContainer, currentFragment);
-        fragmentTransaction.commit();
-
-    }
-
     //change to the view image fragment
-    public void viewImage(){
+    public void viewImage(Bitmap image){
+        viewImageFragment.setDisplayImage(image);
+
         changeFragment(viewImageFragment);
+
+
+
     }
 
     public void viewDBImages(){

@@ -37,9 +37,9 @@ public class ViewDBImagesFragment extends Fragment {
             ImageRecyclerAdapter.ViewHolder[] selected = new ImageRecyclerAdapter.ViewHolder[0];
             selected = adapter.getSelected().toArray(selected);
 
-            Log.d("GPROJ", "size of selected: "+selected.length);
-
-            //TODO: call to database, asking for more specific images
+            if(selected.length > 0) {
+                //TODO: call to database, asking for more specific images
+            }
         }
     };
 
@@ -68,7 +68,7 @@ public class ViewDBImagesFragment extends Fragment {
         viewMoreButton.setOnClickListener(viewMoreListener);
 
         //recycler view initialization
-        rView = (RecyclerView) getActivity().findViewById(R.id.imagesRecyclerView);
+        rView = getActivity().findViewById(R.id.imagesRecyclerView);
         //rView.setHasFixedSize(true);
 
         gridLayoutManager = new GridLayoutManager(getContext(), 3);
@@ -89,7 +89,6 @@ public class ViewDBImagesFragment extends Fragment {
         catch (Exception e){
             Log.d("GPROJ", "Exception occurred: "+e.toString());
         }
-
 
         adapter = new ImageRecyclerAdapter(data);
         rView.setAdapter(adapter);
