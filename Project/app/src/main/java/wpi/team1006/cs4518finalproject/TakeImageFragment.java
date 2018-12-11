@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.ToggleButton;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 
@@ -37,7 +36,8 @@ public class TakeImageFragment extends Fragment {
 
     private View.OnClickListener viewImageListener = new View.OnClickListener(){
         public void onClick(View view){
-            ((MainActivity)getActivity()).viewImage(image);
+            ToggleButton onDevice = getActivity().findViewById(R.id.toggleButton);
+            ((MainActivity)getActivity()).viewImage(onDevice.isChecked());
         }
     };
     private View.OnClickListener imageListener = new View.OnClickListener(){
@@ -45,27 +45,11 @@ public class TakeImageFragment extends Fragment {
             takePicture();
         }
     };
-    private View.OnClickListener addListener = new View.OnClickListener(){
-        public void onClick(View view){
-            //TODO: function to add to DB
-            ((MainActivity)getActivity()).setUri(imageURI);
-            ((MainActivity)getActivity()).onClickAdd(view);
-        }
-    };
 
     private View.OnClickListener inferenceListener = new View.OnClickListener(){
         public void onClick(View view){
             ToggleButton onDevice = getActivity().findViewById(R.id.toggleButton);
-            if(onDevice.isChecked()){
-                //on-device inference function call
-                String result = ((MainActivity)getActivity()).onDeviceProcessing(image);
-                Log.d("GPROJ", "on device: " + result);
-            }
-            else {
-                //off device inference call
-                String result = ((MainActivity)getActivity()).offDeviceProcessing(image);
-                Log.d("GPROJ", "off device: " + result);
-            }
+            ((MainActivity)getActivity()).viewImage(onDevice.isChecked());
         }
     };
 
@@ -102,9 +86,6 @@ public class TakeImageFragment extends Fragment {
         Button analyzeButton = (Button) getActivity().findViewById(R.id.analyzeButton);
         analyzeButton.setOnClickListener(inferenceListener);
 
-        Button addButton = (Button) getActivity().findViewById(R.id.dbButton);
-        addButton.setOnClickListener(addListener);
-
         if(image != null){
             ImageView mCameraDisplayView = (ImageView) getActivity().findViewById(R.id.imageView);
             mCameraDisplayView.setImageBitmap(image);
@@ -119,6 +100,7 @@ public class TakeImageFragment extends Fragment {
         try {
             File tempFile = File.createTempFile("JPG_", ".jpg", directory);
             mCurrentPhotoPath = tempFile.getAbsolutePath();
+            Log.d("GPROJ", "Path: "+tempFile);
             imageURI = FileProvider.getUriForFile(getContext(), "wpi.team1006.cs4518finalproject", tempFile);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageURI);
         }
@@ -144,6 +126,7 @@ public class TakeImageFragment extends Fragment {
             image = Bitmap.createScaledBitmap(origImage, origImage.getWidth()/2, origImage.getHeight()/2, true);
 
             mCameraDisplayView.setImageBitmap(image);
+            ((MainActivity)getActivity()).updateImage(imageURI, image);
         }
     }
 

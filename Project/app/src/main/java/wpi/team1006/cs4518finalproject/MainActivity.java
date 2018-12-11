@@ -45,7 +45,10 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference storageReference;
     private CollectionReference collectionRef;
 
+    //variables to help transfer data between fragments and to database
     private Uri photoURI;
+    private Bitmap image;
+    private String[] tags;
 
     //fragment variables
     ViewImageFragment viewImageFragment;
@@ -148,8 +151,14 @@ public class MainActivity extends AppCompatActivity {
         storageReference = storage.getReference();
     }
 
-    public void setUri(Uri newUri){
+    //update activity's image and URI for when updating to database
+    public void updateImage(Uri newUri, Bitmap newImage){
         photoURI = newUri;
+        image = newImage;
+    }
+    //updates activity's tags for ease of access when adding to database
+    public void updateTags(String[] newTags){
+        tags = newTags;
     }
 
     // Button to add new image information to database and image to storage
@@ -157,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         // Add image information to database
         DataImage imgData = new DataImage();
         imgData.setImage(getFileName(photoURI));
-      //  imgData.setTags();
+        //imgData.setTags(tags);
         collectionRef.add(imgData);
 
         // Add image  data to storage
@@ -184,10 +193,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //change to the view image fragment. The image passed in is the one which will be displayed.
-    public void viewImage(Bitmap image){
-        viewImageFragment.setDisplayImage(image);
-
+    //change to the view image fragment. The image stored in mainActivity is the one that will be displayed.
+    //the boolean onDevice indicates if the fragment should try to do onDevice or offDevice processing.
+    public void viewImage(boolean onDevice){
+        if(image != null) {
+            viewImageFragment.setDisplayImage(image);
+        }
+        viewImageFragment.onDevice = onDevice;
         changeFragment(viewImageFragment);
     }
 
@@ -242,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //Performs inference on the passed in image
-    public String onDeviceProcessing(Bitmap image){
+    public String[] onDeviceProcessing(Bitmap image){
         Bitmap sizedBMP = Bitmap.createScaledBitmap(image, SIZE_X, SIZE_Y, true);
 
         //put the bitmap into imageData as a ByteBuffer
@@ -272,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
                 guessLabel = labels[i];
             }
         }
-        return (guessLabel + ": " + (highest*100) + "%");
+        return new String[] {guessLabel, (highest*100 + "")};
     }
 
     //Helper function for Tensorflow model to convert the Bitmap into the proper format for the model

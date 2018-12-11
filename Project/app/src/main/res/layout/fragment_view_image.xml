@@ -91,6 +91,16 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
+            android:id="@+id/topLeftTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Working..."
+            app:layout_constraintBottom_toTopOf="@+id/topRightTag"
+            app:layout_constraintStart_toEndOf="@+id/topLeft" />
+
+        <TextView
             android:id="@+id/topRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -119,6 +129,36 @@
             android:text="Bottom Right: "
             app:layout_constraintBottom_toTopOf="@+id/dbButton"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/bottomRightTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="24dp"
+            android:text="Working..."
+            app:layout_constraintBottom_toTopOf="@+id/dbButton"
+            app:layout_constraintStart_toEndOf="@+id/bottomRight" />
+
+        <TextView
+            android:id="@+id/bottomLeftTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginBottom="16dp"
+            android:text="Working..."
+            app:layout_constraintBottom_toTopOf="@+id/bottomRightTag"
+            app:layout_constraintStart_toEndOf="@+id/bottomLeft" />
+
+        <TextView
+            android:id="@+id/topRightTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="Working..."
+            app:layout_constraintBottom_toTopOf="@+id/bottomLeft"
+            app:layout_constraintStart_toEndOf="@+id/topRight" />
 
         <Button
             android:id="@+id/dbButton"
