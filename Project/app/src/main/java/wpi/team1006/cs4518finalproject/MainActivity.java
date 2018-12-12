@@ -36,6 +36,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -108,10 +112,14 @@ public class MainActivity extends AppCompatActivity {
 
     // Button to add new image information to database and image to storage
     public void onClickAdd(View v) {
+        // Obtain current date and time
+        String timeStamp = new SimpleDateFormat("MM/dd/yyyy - HH:mm:ss", Locale.getDefault()).format(new Date());
+
         // Add image information to database
         DataImage imgData = new DataImage();
         imgData.setImage(getFileName(photoURI));
-        //imgData.setTags(tags);
+        imgData.setTags(Arrays.asList(tags));
+        imgData.setTime(timeStamp);
         collectionRef.add(imgData);
 
         // Add image  data to storage
@@ -196,6 +204,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return result;
     }
-
 }
 
