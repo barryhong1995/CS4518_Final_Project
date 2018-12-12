@@ -92,9 +92,6 @@ public class ViewDBImagesFragment extends Fragment {
 
         adapter = new ImageRecyclerAdapter(data);
         rView.setAdapter(adapter);
-
-
-
     }
 
 }

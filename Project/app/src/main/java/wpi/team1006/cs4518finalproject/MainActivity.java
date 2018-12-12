@@ -2,6 +2,7 @@ package wpi.team1006.cs4518finalproject;
 
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.graphics.Bitmap;
@@ -16,10 +17,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -37,8 +45,10 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private CollectionReference collectionRef;
+    private Query mQuery;
+    private int LIMIT = 50;
 
     //variables to help transfer data between fragments and to database
     private Uri photoURI;
@@ -110,10 +122,60 @@ public class MainActivity extends AppCompatActivity {
         tags = newTags;
     }
 
+    // Obtain a list of DataImage from Firestore Database
+    private List<DataImage> imgDataList;
+    public List<DataImage> obtainImageDatabase() {
+        imgDataList = new ArrayList<>();
+        collectionRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                //Log.d("MainActivity.java::", document.getId() + " => " + document.getData());
+                                DataImage tempImg = new DataImage();
+                                tempImg.setImage((String) document.getData().get("image"));
+                                tempImg.setTime((String) document.getData().get("time"));
+                                ArrayList tagList = (ArrayList) document.getData().get("tags");
+                                tempImg.setTags(tagList);
+                                imgDataList.add(tempImg);
+                                Log.d("MainActivity.java::", "Image Data obtained:" + tempImg.getTags());
+                            }
+                        } else {
+                            Log.d("MainActivity.java::", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+        return imgDataList;
+    }
+
+    private Bitmap imgBmp;
+    public Bitmap getImgBitmap(String imgName) {
+        StorageReference ref = storageReference.child("images/"+imgName);
+        try {
+            final File localFile = File.createTempFile("Images", "jpg");
+            ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener< FileDownloadTask.TaskSnapshot >() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    imgBmp = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.d("MainActivity.java::", "Image Path worked!");
+        return imgBmp;
+    }
+
     // Button to add new image information to database and image to storage
     public void onClickAdd(View v) {
         // Obtain current date and time
-        String timeStamp = new SimpleDateFormat("MM/dd/yyyy - HH:mm:ss", Locale.getDefault()).format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss", Locale.getDefault()).format(new Date());
 
         // Add image information to database
         DataImage imgData = new DataImage();
