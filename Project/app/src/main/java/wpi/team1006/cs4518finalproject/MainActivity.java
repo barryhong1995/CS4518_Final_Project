@@ -25,20 +25,11 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -118,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         // Add image information to database
         DataImage imgData = new DataImage();
         imgData.setImage(getFileName(photoURI));
-        imgData.setTags(Arrays.asList(tags));
+        imgData.setTags(arrayToListWithoutDuplicates(tags));
         imgData.setTime(timeStamp);
         collectionRef.add(imgData);
 
@@ -204,5 +195,20 @@ public class MainActivity extends AppCompatActivity {
         }
         return result;
     }
+
+    //helper method to remove repeats in the tags when uploading to database
+    private List<String> arrayToListWithoutDuplicates(String[] array){
+        List<String> list = new ArrayList<String>();
+
+        for(int i = 0; i < array.length; i++) {
+            if (!list.contains(array[i])) {
+                list.add(array[i]);
+            }
+        }
+
+        return list;
+    }
+
+
 }
 
