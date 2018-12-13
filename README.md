@@ -18,9 +18,9 @@ This submission contains all files for Parts 1 and 2 of the Final Project. Inclu
 
 ### Division of work:
 - **Hung Hong**: 
- - Coding: Database and Storage management using Firebase, linking the application to the Cloud server, and DataImage Retrieval Process for Database Showcase. Also in charge of data-collection for Performance Profiler
- - Writing: Wrote Design Document sections for the Database section, and the analysis for Performance Profiler Result. Also ensure the layouts of the documents in appropriate format with accompanying images and figures.
- - Design: Designed the overall UI layout along with Hannah Jauris, proposing idea for dividing the main image into 4 equal parts for better inference process.
+  - Coding: Database and Storage management using Firebase, linking the application to the Cloud server, and DataImage Retrieval Process for Database Showcase. Also in charge of data-collection for Performance Profiler
+  - Writing: Wrote Design Document sections for the Database section, and the analysis for Performance Profiler Result. Also ensure the layouts of the documents in appropriate format with accompanying images and figures.
+  - Design: Designed the overall UI layout along with Hannah Jauris, proposing idea for dividing the main image into 4 equal parts for better inference process.
 - **Hannah Jauris**:
   - Coding:UI design and implementation, Inference both on- and off-device, and getting the database code integrated with the different classes and fragments to work properly asynchronously.
   - Writing: Wrote Design Document sections for the UI, Inference, and part of the Databases (retrieving data and how retrieving data interacts with UI), also wrote Performance Metrics, Performance Methodology, Time-Based Metrics Performance, and Summary sections of Performance report, as well as proofreading and editing the rest of the Results section.
