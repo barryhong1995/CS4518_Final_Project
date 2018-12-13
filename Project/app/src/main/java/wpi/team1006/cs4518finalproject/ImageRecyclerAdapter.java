@@ -89,7 +89,7 @@ public class ImageRecyclerAdapter extends Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         viewInfo[position] = (ViewHolder)viewHolder;
-        getImgBitmap(position, images.get(position).getImage());
+        getImgBitmap(position, images.get(position).getImage(), SystemClock.uptimeMillis());// **Part 2 Code: start time for image-fetching**);
 
     }
 
@@ -124,8 +124,7 @@ public class ImageRecyclerAdapter extends Adapter {
         return viewArray;
     }
 
-    private void getImgBitmap(final int position, String imgName) {
-        final long startTime = SystemClock.uptimeMillis();// **Part 2 Code: start time for image-fetching**
+    private void getImgBitmap(final int position, String imgName, final long startTime) {
         StorageReference ref = storageRef.child("images/"+imgName);
         try {
             final File localFile = File.createTempFile("Images", "jpg");
