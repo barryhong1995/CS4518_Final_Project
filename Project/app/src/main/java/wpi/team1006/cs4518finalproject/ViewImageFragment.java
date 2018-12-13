@@ -83,11 +83,17 @@ public class ViewImageFragment extends Fragment {
     private View.OnClickListener addListener = new View.OnClickListener(){
         public void onClick(View view){
             //if tags' length is 0, the inference hasn't finished yet and it shouldn't upload
-            if(tags.length <=0) {
+            if(image == null){
+                Toast.makeText(getContext(), "You must take an image to upload it to the database", Toast.LENGTH_SHORT).show();
+
+            }
+            else if(tags.length <=0) {
                 Toast.makeText(getContext(), "Please wait for tags to be generated before uploading image to database", Toast.LENGTH_SHORT).show();
             }
-            ((MainActivity)getActivity()).updateTags(tags);//set tags here
-            ((MainActivity)getActivity()).onClickAdd(view);
+            else {
+                ((MainActivity) getActivity()).updateTags(tags);//set tags here
+                ((MainActivity) getActivity()).onClickAdd(view);
+            }
         }
     };
 
