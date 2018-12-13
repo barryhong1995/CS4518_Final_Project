@@ -2,8 +2,11 @@
 #### GROUP MEMBERS
 - Hung Hong
 - Hannah Jauris
+
 **NOTE**: Due to the size of the submission, we will provide the Google Drive download link as well as the corresponding md5 checksum for the ZIP submission
+
 **Download Link**: https://drive.google.com/open?id=10pZBOzBZAiUhILS951HUzhfXcinGH3AF
+
 **SHA1 hash** of Team1006FinalProject.zip: 1204f3e9f267d7a489c766d7fa6ab0b8b746a4a7
 
 ### Submission Details
