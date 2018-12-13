@@ -20,6 +20,7 @@ To measure the metrics involving time, namely Inference Time, Database Querying 
 ## Results
 ### Performance through Application Process: Memory Utilization, CPU Usage, and Energy Consumption Metrics
 - Initial startup
+
 ![Performance Profile on Initial Startup and Taking Picture](images/trace_0_using_camera_before_analyze.PNG)
 
 *Figure 1: Performance Profile on Initial Startup and Taking Picture*
@@ -27,6 +28,7 @@ To measure the metrics involving time, namely Inference Time, Database Querying 
 The first thing we want to investigate is the usage of our application on launch. Based on the data that we obtained through the built-in Android Performance Profiler, we notice that it takes a lot of memory (almost 512 MB) to start the application initially, while CPU usage and Energy usage are not as significant, with around 25% of the CPU being used and medium Energy usage for the application. The rise in memory usage is likely because of the initialization of the fragments used for the application, as well as other UI entities, such as buttons, image views, and texts. The gap in the CPU usage in the second half of the graph is due to the “Take Picture” button being pushed, which started the Camera application, which can be seen by the pale red dot at the top of Figure 1. There is a brief spike in CPU usage shortly after the button is pressed, likely because of the app processing the input and sending the implicit intent to start the Camera app. Since the Camera is a separate app from the one being profiled, that CPU usage does not appear in the Profiler output.
 
 - On-device Inference
+
 ![Performance Profile on On-Device Inference](images/trace_1_on_device_inference.PNG)
 
 *Figure 2: Performance Profile on On-Device Inference*
@@ -38,6 +40,7 @@ Based on Figure 2, we noticed a huge rise in CPU, Memory and Energy Usage for th
 *Figure 3: In-depth Profile on CPU Usage*
 
 - Off-device Inference
+
 ![Performance Profile on Off-Device Inference](images/trace_4_off_device_inference.PNG)
 
 *Figure 4: Performance Profile on Off-Device Inference*
@@ -45,6 +48,7 @@ Based on Figure 2, we noticed a huge rise in CPU, Memory and Energy Usage for th
 Compared to On-Device Inference, Off-Device Inference does not take as much resources, as seen by the generally lower CPU, Memory, and Energy Usages in Figure 4. This makes sense, as the computationally-expensive inference takes place off of the device: the application only needs to send the information to an external server, which will perform inference process, and the retrieve data returned to display onto the UI. As a result, we can see there has been some outgoing network communications (expressed by the orange line on Figure 4). Similarly to on-device inference, four spikes in CPU usage can be seen, representing the processing related to the four quarters of the image, although the CPU usage is much lower for off-device inference, with below 25% for off-device inference compared to the approximately 75% CPU usage for on-device inference.
 
 - Upload to Database
+
 ![Performance Profile on Upload to Database after On-Device Inference](images/trace_2_on_device_upload.PNG)
 
 *Figure 5: Performance Profile on Upload to Database after On-Device Inference*
@@ -56,6 +60,7 @@ Compared to On-Device Inference, Off-Device Inference does not take as much reso
 At first, we expected that there should be not much difference between uploading after performing on-device inference and off-device inference. However, based on Figure 5 and Figure 6, we can see that the resource spent on uploading data to the database after Off-Device Inference is less than that after On-Device Inference. This can be explained in that for Off-Device Inference, the connection to the Internet has recently been established and the hardware to connect to the Internet is likely still active after the inference. For On-Device Inference, the uploading process still requires connection to the Internet, but the Internet connection may not have been established before the upload, requiring additional resources to start the Internet to connect to the database.
 
 - View Database Images
+
 ![Performance Profile on View Storage Images](images/trace_6_view_database.PNG)
 
 *Figure 7: Performance Profile on View Storage Images*
@@ -63,6 +68,7 @@ At first, we expected that there should be not much difference between uploading
 When the user displays the final fragment, to display the images from the database, the Firebase Database must be queried for the information about the images, then individually for each image the application attempts to download. As can be seen in the Network section of Figure 7, much information is being received, as indicated by the blue line. Resources are spent on maintaining the connection and loading the images onto our application. This can be seen by the fluctuating graphs of CPU and Energy usage, with the CPR usage, in particular, rising slightly during spikes in times of high amounts of network information being received. As for the Memory Usage, the decrease in Figure 7 can probably be explained as previous memory allocated for inference is relieved over time, hence the sudden drop. It can also be observed that viewing images from the cloud does not take up much memory for our application.
 
 - View similar images
+
 ![Performance Profile on View Similar Images on the Cloud #1](images/trace_7_view_similar_image.PNG)
 
 *Figure 8: Performance Profile on View Similar Images on the Cloud #1*
