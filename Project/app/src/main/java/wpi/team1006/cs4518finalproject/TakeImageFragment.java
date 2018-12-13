@@ -33,13 +33,6 @@ public class TakeImageFragment extends Fragment {
     private Uri imageURI;
     private Bitmap image;
 
-
-    private View.OnClickListener viewImageListener = new View.OnClickListener(){
-        public void onClick(View view){
-            ToggleButton onDevice = getActivity().findViewById(R.id.toggleButton);
-            ((MainActivity)getActivity()).viewImage(onDevice.isChecked());
-        }
-    };
     private View.OnClickListener imageListener = new View.OnClickListener(){
         public void onClick(View view){
             takePicture();
@@ -77,9 +70,6 @@ public class TakeImageFragment extends Fragment {
         super.onActivityCreated(bundle);
 
         //get our buttons and attach listeners to them.
-        Button viewButton = (Button) getActivity().findViewById(R.id.viewImageButton);
-        viewButton.setOnClickListener(viewImageListener);
-
         Button imageButton = (Button) getActivity().findViewById(R.id.takePicButton);
         imageButton.setOnClickListener(imageListener);
 

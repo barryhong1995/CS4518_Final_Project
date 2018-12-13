@@ -4,6 +4,7 @@ package wpi.team1006.cs4518finalproject;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,16 +14,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class ViewDBImagesFragment extends Fragment {
+    private final int SPAN_COUNT = 3;
+
+    private List<DataImage> data;//used to initialize the adapter, and should be changed every time data is fetched
     private RecyclerView rView;
     private ImageRecyclerAdapter adapter;
     private GridLayoutManager gridLayoutManager;
+
+    private CollectionReference collectionRef;//used to query the database, and also to pass to the Adapter so it knows where to load images from
 
     //listener to return to the image-taking fragment
     private View.OnClickListener returnListener = new View.OnClickListener(){
@@ -48,6 +62,13 @@ public class ViewDBImagesFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle bundle){
+        super.onCreate(bundle);
+
+        collectionRef = ((MainActivity)getActivity()).getDBRef();
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,16 +92,31 @@ public class ViewDBImagesFragment extends Fragment {
         rView = getActivity().findViewById(R.id.imagesRecyclerView);
         //rView.setHasFixedSize(true);
 
-        gridLayoutManager = new GridLayoutManager(getContext(), 3);
+        gridLayoutManager = new GridLayoutManager(getContext(), SPAN_COUNT);
         rView.setLayoutManager(gridLayoutManager);
 
         //this should happen every time data is gotten
-        Bitmap[] data = new Bitmap[25];
+        getData();
+
+    }
+
+    private void getData(){
+      //  public List<DataImage> obtainImageDatabase();
+      //  public Bitmap getImgBitmap(String imgName);
+
+
+        obtainImageDatabase();
+
+      //  adapter = new ImageRecyclerAdapter(data);
+       // rView.setAdapter(adapter);
+
+
+        /*Bitmap[] data = new Bitmap[25];
 
         try{
             InputStream image_stream = getActivity().getAssets().open("imgs/cannon.jpg");
             Bitmap bitmap = BitmapFactory.decodeStream(image_stream);
-            Bitmap sizedBMP = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
+            Bitmap sizedBMP = Bitmap.createScaledBitmap(bitmap, DISPLAY_X, DISPLAY_Y, true);
 
             for(int i = 0; i < data.length; i++) {
                 data[i] = sizedBMP;
@@ -88,10 +124,39 @@ public class ViewDBImagesFragment extends Fragment {
         }
         catch (Exception e){
             Log.d("GPROJ", "Exception occurred: "+e.toString());
-        }
+        }*/
 
-        adapter = new ImageRecyclerAdapter(data);
-        rView.setAdapter(adapter);
     }
+
+
+
+    // Obtain a list of DataImage from Firestore Database
+    public void obtainImageDatabase() {
+        collectionRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            data = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                DataImage tempImg = new DataImage();
+                                tempImg.setImage((String) document.getData().get("image"));
+                                tempImg.setTime((String) document.getData().get("time"));
+                                ArrayList tagList = (ArrayList) document.getData().get("tags");
+                                tempImg.setTags(tagList);
+                                data.add(tempImg);
+                                Log.d("MainActivity.java::", "Image Data obtained:" + tempImg.getTags());
+                                Log.d("GPROJ", "Image Data obtained:" + tempImg.getTags());
+
+                            }
+                            adapter = new ImageRecyclerAdapter(data, ((MainActivity)getActivity()).getDBStorageRef());
+                            rView.setAdapter(adapter);
+                        } else {
+                            Log.d("MainActivity.java::", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
 
 }

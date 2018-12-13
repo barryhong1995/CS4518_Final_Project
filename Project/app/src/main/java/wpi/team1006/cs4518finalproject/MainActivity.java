@@ -111,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
         tags = newTags;
     }
 
-    // Obtain a list of DataImage from Firestore Database
+    /*/ Obtain a list of DataImage from Firestore Database
     private List<DataImage> imgDataList;
-    public List<DataImage> obtainImageDatabase() {
+    public List<DataImage> obtainImageDatabase(List<DataImage> list) {
         imgDataList = new ArrayList<>();
         collectionRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         return imgDataList;
-    }
+    }*/
 
     private Bitmap imgBmp;
     public Bitmap getImgBitmap(String imgName) {
@@ -254,6 +254,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return result;
+    }
+
+    //returns the collection reference for ViewDB images fragment
+    public CollectionReference getDBRef(){
+        return collectionRef;
+    }
+    //returns the storage reference for ViewDB images fragment
+    public StorageReference getDBStorageRef(){
+        return storageReference;
     }
 
     //helper method to remove repeats in the tags when uploading to database

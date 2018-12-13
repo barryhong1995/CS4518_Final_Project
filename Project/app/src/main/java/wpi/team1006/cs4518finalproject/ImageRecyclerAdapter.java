@@ -1,19 +1,34 @@
 package wpi.team1006.cs4518finalproject;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ImageRecyclerAdapter extends Adapter {
-    private Bitmap[] images;
+    private final int DISPLAY_X = 300;
+    private final int DISPLAY_Y = 300;
+    private List<DataImage> images;
     private ViewHolder[] viewInfo;
+    private StorageReference storageRef;//reference for where to load images from
 
     public /*static*/ class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
@@ -54,16 +69,17 @@ public class ImageRecyclerAdapter extends Adapter {
     }
 
 
-    public ImageRecyclerAdapter(Bitmap[] queryResults) {
+    public ImageRecyclerAdapter(List<DataImage> queryResults, StorageReference dbRef) {
         images = queryResults;
-        viewInfo = new ViewHolder[images.length];
+        viewInfo = new ViewHolder[images.size()];
+        storageRef = dbRef;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
        ImageView view = new ImageView(viewGroup.getContext());
-       view.setPadding(4, 8, 4, 8);
+       view.setPadding(0, 8, 0, 8);
        view.setActivated(false);
 
        ViewHolder vh = new ViewHolder(view);
@@ -73,13 +89,14 @@ public class ImageRecyclerAdapter extends Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        ((ViewHolder)viewHolder).imageView.setImageBitmap(images[position]);
         viewInfo[position] = (ViewHolder)viewHolder;
+        getImgBitmap(position, images.get(position).getImage());
+
     }
 
     @Override
     public int getItemCount() {
-        return images.length;
+        return images.size();
     }
 
     public ArrayList<ViewHolder> getSelected(){
@@ -94,6 +111,30 @@ public class ImageRecyclerAdapter extends Adapter {
         return viewArray;
     }
 
+    private void getImgBitmap(final int position, String imgName) {
+        StorageReference ref = storageRef.child("images/"+imgName);
+        try {
+            final File localFile = File.createTempFile("Images", "jpg");
+            ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener< FileDownloadTask.TaskSnapshot >() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap imgBmp = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    Bitmap sizedBMP = Bitmap.createScaledBitmap(imgBmp, DISPLAY_X, DISPLAY_Y, true);
+                    viewInfo[position].imageView.setImageBitmap(sizedBMP);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("GRPOJ", "couldn't download image!!");
+                    //Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    //^^We can't include a toast because it's giving weird context problems
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.d("MainActivity.java::", "Image Path worked!");
+    }
 
 
 }
