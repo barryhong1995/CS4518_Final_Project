@@ -10,11 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageReference;
 
@@ -99,6 +97,20 @@ public class ImageRecyclerAdapter extends Adapter {
         return images.size();
     }
 
+
+    //gets the information of the selected element
+    public DataImage getSelectedInfo(){
+
+        for(int i = 0; i < viewInfo.length; i++){
+            if(viewInfo[i] != null && viewInfo[i].imageView.isActivated()){
+                return images.get(i);
+            }
+        }
+
+        return new DataImage();//nothing was selected
+    }
+
+    //to get which element, if any, are currently selected
     public ArrayList<ViewHolder> getSelected(){
         ArrayList<ViewHolder> viewArray = new ArrayList<ViewHolder>();
 
@@ -126,14 +138,11 @@ public class ImageRecyclerAdapter extends Adapter {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Log.d("GRPOJ", "couldn't download image!!");
-                    //Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                    //^^We can't include a toast because it's giving weird context problems
                 }
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Log.d("MainActivity.java::", "Image Path worked!");
     }
 
 

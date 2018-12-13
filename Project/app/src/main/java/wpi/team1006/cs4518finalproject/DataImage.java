@@ -1,5 +1,6 @@
 package wpi.team1006.cs4518finalproject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataImage {
@@ -7,7 +8,9 @@ public class DataImage {
     private List<String> tags;
     private String time;
 
-    public DataImage() {}
+    public DataImage() {
+        tags = new ArrayList<>();//initialize this to prevent exceptions when trying to get size
+    }
     public DataImage(String image, List<String> tags, String time) {
         this.image = image;
         this.tags = tags;

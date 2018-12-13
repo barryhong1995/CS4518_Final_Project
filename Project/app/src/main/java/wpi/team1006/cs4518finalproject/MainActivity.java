@@ -1,6 +1,5 @@
 package wpi.team1006.cs4518finalproject;
 
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -10,23 +9,17 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -37,7 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -111,56 +103,6 @@ public class MainActivity extends AppCompatActivity {
     //updates activity's tags for ease of access when adding to database
     public void updateTags(String[] newTags){
         tags = newTags;
-    }
-
-    /*/ Obtain a list of DataImage from Firestore Database
-    private List<DataImage> imgDataList;
-    public List<DataImage> obtainImageDatabase(List<DataImage> list) {
-        imgDataList = new ArrayList<>();
-        collectionRef.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                //Log.d("MainActivity.java::", document.getId() + " => " + document.getData());
-                                DataImage tempImg = new DataImage();
-                                tempImg.setImage((String) document.getData().get("image"));
-                                tempImg.setTime((String) document.getData().get("time"));
-                                ArrayList tagList = (ArrayList) document.getData().get("tags");
-                                tempImg.setTags(tagList);
-                                imgDataList.add(tempImg);
-                                Log.d("MainActivity.java::", "Image Data obtained:" + tempImg.getTags());
-                            }
-                        } else {
-                            Log.d("MainActivity.java::", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-        return imgDataList;
-    }*/
-
-    private Bitmap imgBmp;
-    public Bitmap getImgBitmap(String imgName) {
-        StorageReference ref = storageReference.child("images/"+imgName);
-        try {
-            final File localFile = File.createTempFile("Images", "jpg");
-            ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener< FileDownloadTask.TaskSnapshot >() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    imgBmp = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Log.d("MainActivity.java::", "Image Path worked!");
-        return imgBmp;
     }
 
     // Button to add new image information to database and image to storage

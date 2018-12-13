@@ -1,8 +1,6 @@
 package wpi.team1006.cs4518finalproject;
 
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -20,7 +18,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,11 +45,10 @@ public class ViewDBImagesFragment extends Fragment {
     //listener to return to the previous fragment
     private View.OnClickListener viewMoreListener = new View.OnClickListener(){
         public void onClick(View view){
-            ImageRecyclerAdapter.ViewHolder[] selected = new ImageRecyclerAdapter.ViewHolder[0];
-            selected = adapter.getSelected().toArray(selected);
-
-            if(selected.length > 0) {
-                //TODO: call to database, asking for more specific images
+            DataImage selected = adapter.getSelectedInfo();
+            if(selected.getTags().size() > 0) {
+                //get more specific data filtered based on tags
+                filterData(selected.getTags());
             }
         }
     };
@@ -96,39 +92,32 @@ public class ViewDBImagesFragment extends Fragment {
         rView.setLayoutManager(gridLayoutManager);
 
         //this should happen every time data is gotten
-        getData();
-
-    }
-
-    private void getData(){
-      //  public List<DataImage> obtainImageDatabase();
-      //  public Bitmap getImgBitmap(String imgName);
-
-
         obtainImageDatabase();
 
-      //  adapter = new ImageRecyclerAdapter(data);
-       // rView.setAdapter(adapter);
-
-
-        /*Bitmap[] data = new Bitmap[25];
-
-        try{
-            InputStream image_stream = getActivity().getAssets().open("imgs/cannon.jpg");
-            Bitmap bitmap = BitmapFactory.decodeStream(image_stream);
-            Bitmap sizedBMP = Bitmap.createScaledBitmap(bitmap, DISPLAY_X, DISPLAY_Y, true);
-
-            for(int i = 0; i < data.length; i++) {
-                data[i] = sizedBMP;
-            }
-        }
-        catch (Exception e){
-            Log.d("GPROJ", "Exception occurred: "+e.toString());
-        }*/
-
     }
 
+    private void filterData(List<String> tagList){
+        List<DataImage> newData = new ArrayList<>();
 
+        //checks each piece of data to see if it belongs in the new data to display
+        for(DataImage d : data){
+            //checks each provided tag. If the current data image has at least one of them, adds it
+            //to the newData list
+            boolean sharesTag = false;
+            for(String tag : tagList){
+                if(d.getTags().contains(tag)){
+                    sharesTag = true;
+                }
+            }
+            if(sharesTag){
+                newData.add(d);
+            }
+        }
+
+        //changes the adapter to be one using the filtered data
+        adapter = new ImageRecyclerAdapter(newData, ((MainActivity)getActivity()).getDBStorageRef());
+        rView.setAdapter(adapter);
+    }
 
     // Obtain a list of DataImage from Firestore Database
     public void obtainImageDatabase() {
@@ -145,8 +134,6 @@ public class ViewDBImagesFragment extends Fragment {
                                 ArrayList tagList = (ArrayList) document.getData().get("tags");
                                 tempImg.setTags(tagList);
                                 data.add(tempImg);
-                                Log.d("MainActivity.java::", "Image Data obtained:" + tempImg.getTags());
-                                Log.d("GPROJ", "Image Data obtained:" + tempImg.getTags());
 
                             }
                             adapter = new ImageRecyclerAdapter(data, ((MainActivity)getActivity()).getDBStorageRef());
