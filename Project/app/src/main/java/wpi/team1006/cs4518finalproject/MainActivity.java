@@ -3,6 +3,7 @@ package wpi.team1006.cs4518finalproject;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.provider.OpenableColumns;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
@@ -120,10 +121,13 @@ public class MainActivity extends AppCompatActivity {
         // Add image  data to storage
         if(photoURI != null)
         {
+            final long startTime = SystemClock.uptimeMillis();// **Part 2 Code: start time for DB upload**
             StorageReference ref = storageReference.child("images/"+ getFileName(photoURI));
             ref.putFile(photoURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    long endTime = SystemClock.uptimeMillis();// **Part 2 code: end time for DB upload and display difference**
+                    Log.d("GPROJ", "Database upload complete: " + (endTime - startTime) + "ms");
                     Toast.makeText(MainActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -240,22 +241,32 @@ public class ViewImageFragment extends Fragment {
             results = new String[img_files.length];
             percentages = new String[img_files.length];
 
+            //************Part 2 variables to measure time*******************
+            long startTime;
+            long endTime;
+
             if(onDevice) {
                 //perform on-device processing for each provided bitmap
+                startTime = SystemClock.uptimeMillis();
                 for (int i = 0; i < img_files.length; i++) {
                     String[] res = onDeviceProcessing(img_files[i]);
                     results[i] = res[0];//res[0] is the actual tag
                     percentages[i] = res[1];//res[1] is the tag's likelihood in the inference
                 }
+                endTime = SystemClock.uptimeMillis();
+                time = endTime - startTime;
                 return time;
             }
             else{
                 //perform off-device processing for each provided bitmap
+                startTime = SystemClock.uptimeMillis();
                 for (int i = 0; i < img_files.length; i++) {
                     String[] res = offDeviceProcessing(img_files[i]);
                     results[i] = res[0];//res[0] is the actual tag
                     percentages[i] = res[1];//res[1] is the tag's likelihood in the inference
                 }
+                endTime = SystemClock.uptimeMillis();
+                time = endTime - startTime;
                 return time;
             }
         }
@@ -264,6 +275,8 @@ public class ViewImageFragment extends Fragment {
         //and updates the display on the app to show results.
         protected void onPostExecute(Long res){
             //get the tags we want to fill with this information and fill them
+            //***********Part 2 code: print the time taken in the debugger for later reference*******************
+            Log.d("GPROJ", "Inference time taken: " + time + "ms");
             for(int i = 0; i < tagDisplays.length; i++) {
                 tagDisplays[i].setText(results[i] + ": "+ percentages[i] + "%");
             }

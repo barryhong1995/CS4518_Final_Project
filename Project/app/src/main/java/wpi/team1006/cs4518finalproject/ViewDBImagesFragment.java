@@ -2,6 +2,7 @@ package wpi.team1006.cs4518finalproject;
 
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -104,9 +105,11 @@ public class ViewDBImagesFragment extends Fragment {
             //checks each provided tag. If the current data image has at least one of them, adds it
             //to the newData list
             boolean sharesTag = false;
-            for(String tag : tagList){
-                if(d.getTags().contains(tag)){
-                    sharesTag = true;
+            if(d.getTags() != null) {
+                for (String tag : tagList) {
+                    if (d.getTags().contains(tag)) {
+                        sharesTag = true;
+                    }
                 }
             }
             if(sharesTag){
@@ -121,11 +124,15 @@ public class ViewDBImagesFragment extends Fragment {
 
     // Obtain a list of DataImage from Firestore Database
     public void obtainImageDatabase() {
+        final long startTime = SystemClock.uptimeMillis();// ****Part 2 code: gets start time for request***
+
         collectionRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            long endTime = SystemClock.uptimeMillis();// ****Part 2 code: get end time and print results****
+                            Log.d("GPROJ", "Database tag-fetching complete: " + (endTime - startTime) + "ms");
                             data = new ArrayList<>();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 DataImage tempImg = new DataImage();

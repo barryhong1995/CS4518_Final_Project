@@ -3,6 +3,7 @@ package wpi.team1006.cs4518finalproject;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
@@ -124,12 +125,15 @@ public class ImageRecyclerAdapter extends Adapter {
     }
 
     private void getImgBitmap(final int position, String imgName) {
+        final long startTime = SystemClock.uptimeMillis();// **Part 2 Code: start time for image-fetching**
         StorageReference ref = storageRef.child("images/"+imgName);
         try {
             final File localFile = File.createTempFile("Images", "jpg");
             ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener< FileDownloadTask.TaskSnapshot >() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    long endTime = SystemClock.uptimeMillis();// **Part 2 Code: end time for image-fetching and display the difference**
+                    Log.d("GPROJ", "Database image-fetching complete: " + (endTime - startTime) + "ms");
                     Bitmap imgBmp = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                     Bitmap sizedBMP = Bitmap.createScaledBitmap(imgBmp, DISPLAY_X, DISPLAY_Y, true);
                     viewInfo[position].imageView.setImageBitmap(sizedBMP);
